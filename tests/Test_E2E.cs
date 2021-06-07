@@ -22,38 +22,34 @@ namespace tests
         }
 
         [Test]
-        public void MovieListingExists()
+        public void UsersCanViewMovieDetails()
         {
             _driver.Url = "http://localhost:4200/movies";
 
-            try
-            {
-                _driver.FindElement(By.XPath("//ion-list"));
-                Assert.Pass();
-            }
-            catch (NoSuchElementException)
-            {
-                Assert.Fail("Movies list not found!");
-            }
+            var wait = new OpenQA.Selenium.Support.UI.WebDriverWait(_driver, TimeSpan.FromSeconds(10));
+            IWebElement detailsLink = wait.Until(drv => drv.FindElement(By.XPath("//ion-icon[@name='chevron-forward-outline']")));
+            detailsLink.Click();
+
+            IWebElement title = wait.Until(drv => drv.FindElement(By.XPath("//app-view-movie")));
+            Assert.Pass();
         }
 
         [Test]
-        public void LoginFormExists()
+        public void LoggedInUserCanViewFavourites()
         {
             _driver.Url = "http://localhost:4200/login";
-            _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
 
-            try
-            {
-                IWebElement name = _driver.FindElement(By.XPath("//ion-input[@name='email']"));
-                IWebElement password = _driver.FindElement(By.XPath("//ion-input[@name='password']"));
-                Assert.Pass();
+            var wait = new OpenQA.Selenium.Support.UI.WebDriverWait(_driver, TimeSpan.FromSeconds(10));
+            IWebElement name = wait.Until(drv => drv.FindElement(By.XPath("//input[@name='email']")));
+            IWebElement password = wait.Until(drv => drv.FindElement(By.XPath("//input[@name='password']")));
+            name.Click();
+            name.SendKeys("test123@test.com");
+            password.Click();
+            password.SendKeys("Test_123");
 
-            }
-            catch (NoSuchElementException)
-            {
-                Assert.Fail("Login inputs not found!");
-            }
+            _driver.Navigate().GoToUrl("http://localhost:4200/favourites");
+
+            Assert.Pass();
         }
     }
 }
